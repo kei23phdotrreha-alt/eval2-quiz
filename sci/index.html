@@ -1,0 +1,320 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>脊髄損傷 確認問題</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap">
+<style>
+/* Layout: one narrow column for the phone. Home lists the four class sessions as rows;
+   the quiz screen is one question at a time with a row of "vertebra" segments as progress. */
+:root{
+  --bg:#F2F5F8; --surface:#FBFCFD; --ink:#16212E; --muted:#55637A; --line:#D3DBE5;
+  --accent:#1F5F8B; --accent-ink:#FFFFFF; --ok:#1B7655; --ok-bg:#DCF0E7; --ng:#AD4315; --ng-bg:#FAE5D9;
+  --s1:#2B5C8A; --s2:#B5601A; --s3:#1F7A66; --s4:#5A4A96; --seg:#DCE3EB;
+  --f-body:'Zen Kaku Gothic New','Hiragino Kaku Gothic ProN','Yu Gothic',Meiryo,sans-serif;
+  --f-num:'Barlow Condensed','Zen Kaku Gothic New',Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#10161E; --surface:#18212C; --ink:#E8EDF3; --muted:#9BA9BB; --line:#2C3948;
+  --accent:#74B5E3; --accent-ink:#0C1620; --ok:#62CCA2; --ok-bg:#143629; --ng:#F2A072; --ng-bg:#3B2315;
+  --s1:#83B6E0; --s2:#E9A667; --s3:#70D0B6; --s4:#B7AAEC; --seg:#2A3644; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#10161E; --surface:#18212C; --ink:#E8EDF3; --muted:#9BA9BB; --line:#2C3948;
+  --accent:#74B5E3; --accent-ink:#0C1620; --ok:#62CCA2; --ok-bg:#143629; --ng:#F2A072; --ng-bg:#3B2315;
+  --s1:#83B6E0; --s2:#E9A667; --s3:#70D0B6; --s4:#B7AAEC; --seg:#2A3644; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.65;padding-inline:16px;padding-block:20px 48px}
+#app{max-width:640px;margin-inline:auto;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3,p{margin:0}
+h1{font-size:30px;font-weight:900;line-height:1.25;text-wrap:balance}
+h2{font-size:21px;font-weight:700;line-height:1.4}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--muted)}
+.muted{color:var(--muted);font-size:15px}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:13px 18px;font-weight:700;min-height:50px}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.text{border:none;background:none;color:var(--muted);font-weight:500;padding:8px 4px;min-height:0;text-decoration:underline}
+.stack{display:flex;flex-direction:column;gap:12px}
+.rowbtns{display:flex;flex-wrap:wrap;gap:10px}
+.rowbtns .btn{flex:1 1 200px}
+
+/* home */
+.overall{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.overall .big{font-size:52px;font-weight:700;line-height:1}
+.sessions{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.session{display:grid;grid-template-columns:1fr auto;gap:6px 14px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line);background:none;border-left:none;border-right:none;border-top:none;text-align:left;width:100%}
+.session .name{font-weight:700;font-size:18px;line-height:1.4}
+.session .koma{font-family:var(--f-num);font-size:15px;font-weight:700;letter-spacing:.06em}
+.session .topics{grid-column:1/2;font-size:14px;color:var(--muted);line-height:1.5}
+.session .go{grid-row:1/4;grid-column:2/3;font-weight:700;font-size:15px;white-space:nowrap;border:1px solid var(--line);border-radius:999px;padding:8px 14px;background:var(--surface)}
+.session .segs{grid-column:1/2}
+.segs{display:flex;gap:3px}
+.segs i{flex:1;height:10px;border-radius:3px;background:var(--seg);min-width:0}
+.segs i.ok{background:var(--ok)}
+.segs i.ng{background:var(--ng)}
+.segs i.cur{background:var(--surface);box-shadow:inset 0 0 0 2px var(--ink)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:14px;height:10px;border-radius:3px;background:var(--seg);display:inline-block}
+.legend i.ok{background:var(--ok)} .legend i.ng{background:var(--ng)}
+.note{font-size:13px;color:var(--muted);line-height:1.6}
+.confirm{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--surface);display:flex;flex-direction:column;gap:10px}
+
+/* quiz */
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.qhead .count{font-size:22px;font-weight:700}
+.tag{font-size:13px;font-weight:700;letter-spacing:.04em}
+.question{font-size:21px;font-weight:700;line-height:1.55;text-wrap:pretty}
+.choices{display:flex;flex-direction:column;gap:10px}
+.choice{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:13px 14px;min-height:56px;font-size:17px;line-height:1.5}
+.choice .k{font-family:var(--f-num);font-size:20px;font-weight:700;color:var(--muted);text-align:center}
+.choice .mark{font-size:14px;font-weight:700;white-space:nowrap}
+.choice.is-ok{background:var(--ok-bg);border-color:var(--ok)}
+.choice.is-ok .mark,.choice.is-ok .k{color:var(--ok)}
+.choice.is-ng{background:var(--ng-bg);border-color:var(--ng)}
+.choice.is-ng .mark,.choice.is-ng .k{color:var(--ng)}
+.choice:disabled{cursor:default;color:var(--ink)}
+.feedback{border-left:4px solid var(--line);padding:4px 0 4px 14px;display:flex;flex-direction:column;gap:6px}
+.feedback.ok{border-color:var(--ok)} .feedback.ng{border-color:var(--ng)}
+.feedback .verdict{font-weight:900;font-size:19px}
+.feedback.ok .verdict{color:var(--ok)} .feedback.ng .verdict{color:var(--ng)}
+.feedback p{font-size:16px}
+
+/* result */
+.score{display:flex;align-items:baseline;gap:8px}
+.score .big{font-size:84px;font-weight:700;line-height:.95}
+.score .of{font-size:28px;font-weight:500;color:var(--muted)}
+.review{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.review details{border-bottom:1px solid var(--line);padding:12px 0}
+.review summary{cursor:pointer;display:grid;grid-template-columns:76px 1fr;gap:8px;font-size:16px;line-height:1.5;list-style:none}
+.review summary::-webkit-details-marker{display:none}
+.review .r{font-weight:900;font-size:14px;white-space:nowrap}
+.review .r.ok{color:var(--ok)} .review .r.ng{color:var(--ng)}
+.review .ans{margin:8px 0 0 84px;font-size:15px;display:flex;flex-direction:column;gap:4px}
+@media (prefers-reduced-motion:no-preference){ .choice,.btn{transition:background-color .15s,border-color .15s} }
+</style>
+
+<div id="app"></div>
+
+<script>
+const SESSIONS = {
+  1:{name:'病態と神経学的評価', topics:'解剖と伝導路、損傷の型、ASIA、ザンコリー分類', color:'var(--s1)'},
+  2:{name:'合併症とリスク管理', topics:'自律神経過反射、起立性低血圧、褥瘡、異所性骨化、急性期', color:'var(--s2)'},
+  3:{name:'回復期のADL', topics:'テノデーシス、代償運動、レベル別ADL、装具と自助具', color:'var(--s3)'},
+  4:{name:'社会参加と高齢不全麻痺', topics:'住宅整備、復学・復職、制度、高齢不全麻痺', color:'var(--s4)'}
+};
+// s:コマ  t:テーマ  q:問題  c:選択肢  a:正解の位置  e:解説
+const Q = [
+ {s:1,t:'解剖',q:'成人で脊髄が終わる高さはどれか。',c:['Th10椎体','L1〜L2椎体','L4〜L5椎体','S2椎体','C7椎体'],a:1,e:'脊髄は成人でL1〜L2椎体の高さで終わり（脊髄円錐）、それより下は馬尾（神経根）になる。'},
+ {s:1,t:'伝導路',q:'温痛覚を伝える伝導路はどれか。',c:['後索','外側皮質脊髄路','脊髄視床路','前皮質脊髄路','脊髄小脳路'],a:2,e:'温痛覚は脊髄視床路、深部感覚と触覚は後索、随意運動は外側皮質脊髄路が伝える。'},
+ {s:1,t:'伝導路',q:'脊髄視床路の線維が交叉する場所はどれか。',c:['延髄','中脳','橋','脊髄に入ってすぐ','交叉しない'],a:3,e:'脊髄視床路は脊髄に入ってすぐ交叉するため、症状は損傷の反対側に出る。後索と皮質脊髄路は延髄で交叉し、症状は同側に出る。'},
+ {s:1,t:'損傷の型',q:'ブラウン-セカール型で、損傷と反対側に生じるのはどれか。',c:['運動麻痺','深部感覚障害','温痛覚障害','腱反射亢進','振動覚障害'],a:2,e:'温痛覚の線維は脊髄に入ってすぐ交叉するので反対側に障害が出る。運動麻痺と深部感覚障害は同側に出る。'},
+ {s:1,t:'損傷の型',q:'脊髄中心損傷型の特徴はどれか。',c:['下肢の障害が上肢より重い','上肢の障害が下肢より重い','温痛覚だけが障害される','深部感覚だけが障害される','膀胱直腸障害だけが出る'],a:1,e:'皮質脊髄路では上肢の線維が内側を走るため、中心部の損傷では上肢が重くなる。高齢者の過伸展損傷に多い。'},
+ {s:1,t:'損傷の型',q:'前索損傷型で残存する機能はどれか。',c:['随意運動','温度覚','痛覚','深部感覚','すべて消失する'],a:3,e:'前索損傷型では運動と温痛覚が麻痺するが、後索を通る深部感覚は残存する。'},
+ {s:1,t:'損傷の型',q:'高齢者の非骨傷性頸髄損傷に多い型はどれか。',c:['前索損傷型','中心性損傷型','円錐損傷型','馬尾損傷型','完全損傷'],a:1,e:'脊柱管狭窄症や後縦靱帯骨化症を背景に、転倒による過伸展で中心性の不全四肢麻痺が起こりやすい。'},
+ {s:1,t:'分類',q:'完全損傷か不全損傷かの判定で最も重視する髄節はどれか。',c:['C5','T1','T10','L2','S4-5'],a:4,e:'最下位の仙髄（S4-5）の感覚や肛門括約筋の随意収縮が残れば不全損傷と判定する（仙髄回避）。'},
+ {s:1,t:'ASIA',q:'ASIAの評価で、C6のキーマッスルはどれか。',c:['肘屈筋','手関節背屈筋','肘伸筋','中指の深指屈筋','小指外転筋'],a:1,e:'C5 肘屈筋、C6 手関節背屈筋、C7 肘伸筋、C8 中指の深指屈筋、T1 小指外転筋。'},
+ {s:1,t:'ASIA',q:'ASIAの評価で、C7のキーマッスルはどれか。',c:['肘屈筋','手関節背屈筋','肘伸筋','中指の深指屈筋','小指外転筋'],a:2,e:'C7のキーマッスルは肘伸筋（上腕三頭筋）。'},
+ {s:1,t:'ASIA',q:'キーセンサリーポイントが「中指」である髄節はどれか。',c:['C5','C6','C7','C8','T1'],a:2,e:'C6は母指、C7は中指、C8は小指。C5は肘窩の外側、T1は肘窩の内側。'},
+ {s:1,t:'ASIA',q:'ASIA（ISNCSCI）の運動スコアの満点はどれか。',c:['50点','56点','100点','112点','224点'],a:2,e:'キーマッスル10筋×左右×5点で100点（上肢50点、下肢50点）。触覚と痛覚はそれぞれ112点。'},
+ {s:1,t:'ASIA',q:'AISのCとDを分ける基準はどれか。',c:['仙髄の感覚の有無','肛門の随意収縮の有無','神経学的レベルより下の主要筋の半数以上がMMT3以上か','感覚スコアの合計','歩行ができるかどうか'],a:2,e:'神経学的レベルより下のキーマッスルの半数以上がMMT3以上ならD、3未満ならCと判定する。'},
+ {s:1,t:'ザンコリー',q:'ザンコリー分類C6B2で機能する筋はどれか。',c:['上腕三頭筋','円回内筋','橈側手根屈筋','総指伸筋','深指屈筋'],a:1,e:'C6B2は円回内筋が機能し、橈側手根屈筋と上腕三頭筋は機能しない。3筋とも機能するとB3。'},
+ {s:1,t:'ザンコリー',q:'ザンコリー分類でC5AとC5Bを分ける筋はどれか。',c:['三角筋','上腕二頭筋','腕橈骨筋','橈側手根伸筋','円回内筋'],a:2,e:'腕橈骨筋が機能しなければC5A、機能すればC5B。'},
+
+ {s:2,t:'自律神経過反射',q:'自律神経過反射が起きたとき、最初に行う対応はどれか。',c:['背臥位にする','座位にする','下肢を挙上する','水分を摂らせる','様子をみる'],a:1,e:'座位にして頭部を上げる。背臥位や下肢挙上は血圧をさらに上げる。その後、衣服をゆるめ、膀胱・直腸の順に原因を確認する。'},
+ {s:2,t:'自律神経過反射',q:'自律神経過反射が起こりやすい損傷高位はどれか。',c:['Th5・6以上','Th10以下','L1以下','S2以下','高位に関係しない'],a:0,e:'Th5・6以上の損傷で起こる。脳からの抑制が損傷部を越えられず、損傷部以下の血管が強く収縮して血圧が上がる。'},
+ {s:2,t:'自律神経過反射',q:'自律神経過反射の引き金として最も多いのはどれか。',c:['膀胱の充満','空腹','睡眠不足','上肢の筋疲労','室温の低下'],a:0,e:'膀胱の充満（カテーテルの屈曲・閉塞など）が最多。次いで便の貯留、褥瘡やきつい衣服など麻痺域の刺激。'},
+ {s:2,t:'自律神経過反射',q:'自律神経過反射でみられる所見はどれか。',c:['血圧低下','顔面蒼白','徐脈','あくび','損傷レベルより下の発汗'],a:2,e:'急な血圧上昇、激しい頭痛、損傷レベルより上の発汗・顔面紅潮、鳥肌、徐脈がみられる。'},
+ {s:2,t:'起立性低血圧',q:'リクライニング車椅子に乗った頸髄損傷者が顔面蒼白となり、あくびをくり返している。まず行う対応はどれか。',c:['座位を保ち衣服をゆるめる','背もたれを倒して頭部を下げる','立位をとらせる','水を飲ませる','上肢の運動を続ける'],a:1,e:'起立性低血圧が疑われる。頭部を心臓と同じ高さにし（リクライニングを倒す・下肢挙上）、血圧と意識を確認する。'},
+ {s:2,t:'呼吸',q:'横隔膜を支配する髄節はどれか。',c:['C1〜C2','C3〜C5','C6〜C8','Th1〜Th6','Th7〜Th12'],a:1,e:'横隔神経はC3〜C5。C3以上の損傷では横隔膜が麻痺し、人工呼吸器が必要になる。'},
+ {s:2,t:'異所性骨化',q:'脊髄損傷で異所性骨化が最も起こりやすい関節はどれか。',c:['肩関節','肘関節','手関節','股関節','足関節'],a:3,e:'股関節が最多で、次いで膝、肘。関節周囲の腫れ・熱感、ROMの急な制限がサインになる。'},
+ {s:2,t:'異所性骨化',q:'異所性骨化の予防として適切なのはどれか。',c:['強い力でROM訓練を行う','ROM訓練を愛護的に行う','麻痺域のROM訓練をすべて中止する','患部を温める','長時間同じ肢位で固定する'],a:1,e:'暴力的なROM訓練が原因の一つとされる。運動学・解剖学にもとづき、愛護的に行う。'},
+ {s:2,t:'褥瘡',q:'車椅子座位で褥瘡が最も生じやすい部位はどれか。',c:['後頭部','肩甲骨部','坐骨結節部','大転子部','踵部'],a:2,e:'車椅子座位では坐骨結節部と仙骨・尾骨部。背臥位では後頭部・肩甲骨・肘・仙骨・踵。'},
+ {s:2,t:'褥瘡',q:'褥瘡のステージ1の状態はどれか。',c:['押すと消える発赤','押しても消えない発赤','水疱の形成','皮下脂肪に達する潰瘍','骨に達する潰瘍'],a:1,e:'ステージ1は皮膚が保たれ、押しても消えない発赤だけがある。この段階で気づいて除圧すれば悪化を防げる。'},
+ {s:2,t:'急性期',q:'C5完全損傷の臥床期に避けるべき訓練はどれか。',c:['肩関節のROM訓練','三角筋の促通','上腕二頭筋の筋力増強','手のポジショニング','ナースコールの操作練習'],a:2,e:'上腕二頭筋を過剰に強化すると、麻痺した上腕三頭筋とのアンバランスで肘の屈曲拘縮を招く。'},
+ {s:2,t:'拘縮',q:'C5レベルで起こりやすい拘縮はどれか。',c:['肘伸展・前腕回内','肘屈曲・前腕回外','肩外転・外旋','手関節背屈','股関節伸展'],a:1,e:'上腕二頭筋は効くが上腕三頭筋が麻痺しているため、肘屈曲・前腕回外位で拘縮しやすい。'},
+ {s:2,t:'脊髄ショック',q:'脊髄ショック期の特徴はどれか。',c:['痙縮が強い','腱反射が亢進する','損傷レベル以下の反射消失と弛緩性麻痺','自動膀胱になる','この時期の評価で予後が確定する'],a:2,e:'数日〜3・4週続き、反射消失、弛緩性麻痺、尿閉がみられる。不全損傷でも完全麻痺にみえるため、予後の判断を急がない。'},
+ {s:2,t:'膀胱',q:'排尿中枢（S2〜4）より上の損傷で生じる膀胱の状態はどれか。',c:['自律膀胱','自動膀胱','正常な排尿','排尿反射の消失','弛緩性の膀胱'],a:1,e:'核上型では反射で排尿が起こる自動膀胱になる。S2〜4以下の損傷では排尿反射のない自律膀胱になる。'},
+ {s:2,t:'評価の注意',q:'感覚検査を進める方向として適切なのはどれか。',c:['健常部位から損傷域へ','損傷域から健常部位へ','下肢から上肢へ','遠位から近位へ','どちらでもよい'],a:1,e:'健常部から損傷域へ向かうと促通効果で境界があいまいになる。顔面で正常な感覚を示してから、損傷域から健常部位へ向かって検査する。'},
+
+ {s:3,t:'テノデーシス',q:'テノデーシスアクションの主動作筋はどれか。',c:['深指屈筋','橈側手根伸筋','円回内筋','上腕三頭筋','母指対立筋'],a:1,e:'長・短橈側手根伸筋（C6）で手関節を背屈し、手指屈筋の腱作用で指を曲げる。'},
+ {s:3,t:'テノデーシス',q:'手関節を背屈したとき、テノデーシスアクションで手指に起こる動きはどれか。',c:['伸展','屈曲','外転','内転','動かない'],a:1,e:'手関節を背屈すると手指が屈曲（つまむ）、掌屈すると伸展（開く）する。'},
+ {s:3,t:'テノデーシス',q:'C6レベルでテノデーシスを守るために避けることはどれか。',c:['手関節背屈筋の強化','肩のROM訓練','手関節背屈と手指伸展を同時に強くストレッチする','手指を曲げたまま手関節を背屈する','スプリントの装着'],a:2,e:'手指屈筋の適度な短縮がつまみ力になる。背屈と手指伸展を同時に強く伸ばすと、つまみ力が失われる。'},
+ {s:3,t:'装具',q:'長対立装具の主な対象となる残存機能レベルはどれか。',c:['C4〜C5','C6','C7','C8','Th1以下'],a:0,e:'手関節背屈が困難なC4〜C5が対象。手関節を軽度背屈・母指対立位に保持し、万能カフと組み合わせて使う。'},
+ {s:3,t:'装具',q:'把持装具（RIC型など）の主な対象レベルはどれか。',c:['C4','C5','C6','C8','Th1以下'],a:2,e:'手関節背屈力が実用的なC6レベルで、テノデーシスによるつまみを強める。'},
+ {s:3,t:'代償運動',q:'C6レベルで肘伸展の代償に用いるのはどれか。',c:['肩の内旋と重力','肩の外旋と重力','前腕の回外','手関節の掌屈','体幹の屈曲'],a:1,e:'肩を外旋させ、重力を利用して肘を伸展位でロックする（肘ロック）。'},
+ {s:3,t:'代償運動',q:'手を床について肩や体幹を動かすと、上腕三頭筋が効かなくても肘が伸びる。この運動はどれか。',c:['開放運動連鎖','閉鎖運動連鎖','テノデーシスアクション','連合反応','共同運動'],a:1,e:'末梢を固定して中枢を動かす閉鎖運動連鎖（CKC）。プッシュアップや起き上がりで使う。'},
+ {s:3,t:'レベル別ADL',q:'C4完全損傷でPC入力に用いるのはどれか。',c:['ユニバーサルカフ','把持装具','マウススティック','短対立装具','ボタンエイド'],a:2,e:'C4ではマウススティックや環境制御装置、音声入力を用いる。'},
+ {s:3,t:'レベル別ADL',q:'C7レベルで新たに効き、プッシュアップでの移乗を可能にする筋はどれか。',c:['三角筋','上腕二頭筋','橈側手根伸筋','上腕三頭筋','手内筋'],a:3,e:'C7では上腕三頭筋と手指伸筋が効き、車椅子上のADLがほぼ自立する。'},
+ {s:3,t:'レベル別ADL',q:'C8レベルで巧緻動作が制限される主な理由はどれか。',c:['上腕三頭筋の麻痺','手指屈筋の麻痺','手内筋の麻痺','手関節背屈筋の麻痺','三角筋の麻痺'],a:2,e:'C8では手指屈筋は効くが手内筋が麻痺しているため、細かいつまみが制限される。'},
+ {s:3,t:'C6B2',q:'C6B2レベルの完全損傷で使えない筋はどれか。',c:['三角筋','上腕二頭筋','橈側手根伸筋','円回内筋','上腕三頭筋'],a:4,e:'上腕三頭筋、橈側手根屈筋、手指の筋は使えない。肘伸展は肘ロックで代償する。'},
+ {s:3,t:'床上動作',q:'実用的な寝返りが可能になる目安のレベルはどれか。',c:['C4','C5A','C6A','C8','Th1'],a:2,e:'上肢を左右に大きく振り、回転モーメントと重さで肩甲帯を回す。実用的にはC6Aから。'},
+ {s:3,t:'移乗',q:'頸髄損傷者でよく用いられる移乗方法はどれか。',c:['前方移乗（直角移乗）','床からの移乗','立位での移乗','介助なしの横移乗のみ','リフトのみ'],a:0,e:'足上げ → 前方へ移動 → 方向転換の順に行う前方移乗を用いる。横移乗では肘ロックやトランスファーボードを使う。'},
+ {s:3,t:'車椅子',q:'手動車椅子の駆動が可能になる目安のレベルはどれか。',c:['C3','C4','C5A','C5B以下','Th1以下のみ'],a:3,e:'C4・C5Aは電動車椅子。C5Bからは摩擦の高い手袋とハンドリムで手動駆動も可能になる。'},
+ {s:3,t:'機能再建術',q:'C5・C6レベルの機能再建術で、肘伸展の再建に用いる筋はどれか。',c:['三角筋後部線維','上腕二頭筋','腕橈骨筋','円回内筋','長橈側手根伸筋'],a:0,e:'三角筋後部線維を使って肘伸展を再建する。C6・C7では長橈側手根伸筋などを長母指屈筋につなぎ、つまみを再建する。'},
+
+ {s:4,t:'移動手段',q:'自動車運転が可能となる最も高位の残存機能レベルはどれか。',c:['C4','C5','C6','C8','Th6'],a:2,e:'C6から可能。運転席への移乗、車椅子の車載、ハンドル回旋装置の操作が課題になる。'},
+ {s:4,t:'移動手段',q:'C6レベルでハンドル回旋装置を使うときの工夫はどれか。',c:['ノブ型をそのまま握る','2本のベルクロで手を固定する','固定は不要である','足で操作する','口で操作する'],a:1,e:'C6は固定力が弱いので2本のベルクロで固定する。C7は固定ベルト不要、C8〜対麻痺はノブ型で可能。'},
+ {s:4,t:'機器',q:'C4完全損傷者の在宅生活で最も優先度が高い機器はどれか。',c:['把持装具','環境制御装置','短対立装具','ボタンエイド','手動車椅子'],a:1,e:'環境制御装置（ECS）。呼気や視線などのスイッチでテレビ、照明、ナースコールを操作する。'},
+ {s:4,t:'住宅整備',q:'車椅子での住宅整備で適切なのはどれか。',c:['開き戸にする','スロープの勾配を1/5にする','廊下の有効幅を60cmにする','引き戸にする','玄関に段差を残す'],a:3,e:'出入口は引き戸にし、段差を解消する。'},
+ {s:4,t:'住宅整備',q:'スロープの勾配の目安はどれか。',c:['1/3以下','1/5以下','1/8以下','1/12以下','1/50以下'],a:3,e:'1/12以下が目安。長くなる場合は段差昇降機を検討する。'},
+ {s:4,t:'住宅整備',q:'車椅子が通る廊下・出入口の有効幅の目安はどれか。',c:['50cm以上','60cm以上','70cm以上','80〜90cm以上','150cm以上'],a:3,e:'有効幅80〜90cm以上が目安。実際は車椅子の寸法や駆動能力で決める。'},
+ {s:4,t:'住宅整備',q:'居室で車椅子が回転するためのスペースの目安はどれか。',c:['直径80cm','直径100cm','直径120cm','直径150cm','直径250cm'],a:3,e:'直径150cm程度が目安。'},
+ {s:4,t:'ADLの到達',q:'C6B2完全損傷者で、条件を整えれば自立が期待できるのはどれか。',c:['床からの移乗','浴槽への出入り','食事','歩行','手指での細かいつまみ'],a:2,e:'ユニバーサルカフとテノデーシスで食事の自立が期待できる。'},
+ {s:4,t:'自律生活',q:'自律生活の説明で正しいのはどれか。',c:['すべての動作を1人で行う','介助を受けない生活','他者を活用して生活をマネジメントできる','施設で生活する','就労していること'],a:2,e:'動作の自立だけでなく、他者を活用して自分の生活支援をマネジメントできることを指す。'},
+ {s:4,t:'復学',q:'復学の支援で適切なのはどれか。',c:['機能訓練が終わるまで復学を待つ','同学年への復学を優先する','本人の許可なく学校を訪問する','排泄の方法は学校に伝えない','試験方法は変更しない'],a:1,e:'身体状況が安定したら同学年への復学を優先する。本人と家族の許可を得て学校を訪問し、移動介助、食事・排泄、授業・試験の受け方を打ち合わせる。'},
+ {s:4,t:'復職',q:'復職・就職の必須条件とされるのはどれか。',c:['歩行ができること','単独での通勤と体調管理','身体作業ができること','家族が毎日付き添うこと','自動車を運転できること'],a:1,e:'単独での通勤とADLの遂行、健康管理と体調の安定が必須条件。事務・知的作業への配置転換が多く、在宅就労も増えている。'},
+ {s:4,t:'制度',q:'車椅子などの補装具が支給される制度はどれか。',c:['障害者総合支援法','生活保護法のみ','雇用保険','国民年金','学校教育法'],a:0,e:'障害者総合支援法により、補装具（車椅子・装具など）や日常生活用具、居宅介護などが利用できる。'},
+ {s:4,t:'制度',q:'40〜64歳で介護保険の対象となる特定疾病に含まれるのはどれか。',c:['後縦靱帯骨化症','交通事故による頸髄損傷','スポーツ外傷による脊髄損傷','転落による胸髄損傷','労働災害による腰髄損傷'],a:0,e:'40〜64歳では特定疾病（脊柱管狭窄症、後縦靱帯骨化症など）の場合に介護保険の対象になる。'},
+ {s:4,t:'高齢不全麻痺',q:'高齢不全頸髄損傷者へのアプローチで適切なのはどれか。',c:['最大努力での筋力増強','倒れない環境で課題を行う','代償パターンを積極的に使う','早期に歩行の達成を約束する','痙縮が強くても課題の難易度を上げる'],a:1,e:'OTが後方から支えるなど倒れない保証をすると、固定的に働いていた過剰な筋収縮がゆるむ。過剰な努力にならない難易度にする。'},
+ {s:4,t:'高齢不全麻痺',q:'高齢不全麻痺で、回復が先行しやすい筋はどれか。',c:['短筋（単関節筋）','長筋（多関節筋）','手内筋','表情筋','回復に順序はない'],a:1,e:'回復は長筋（多関節筋）が先行し、短筋（単関節筋）は使われず廃用になりやすい。大きな長い筋で関節を固める固定的姿勢制御が、痛みや拘縮につながる。'}
+];
+Q.forEach((x, i) => { x.id = 'q' + String(i + 1).padStart(2, '0'); });
+
+const KEY = 'sci-quiz-v1';
+let store = { stats: {}, best: {} };
+try { const raw = localStorage.getItem(KEY); if (raw) store = Object.assign(store, JSON.parse(raw)); } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} };
+
+const app = document.getElementById('app');
+let st = { view: 'home', confirm: false };
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const last = id => (store.stats[id] ? store.stats[id].last : null);
+const segClass = id => (last(id) === 1 ? 'ok' : last(id) === 0 ? 'ng' : '');
+const wrongList = () => Q.filter(x => last(x.id) === 0);
+
+function start(list, label, bestKey) {
+  st = { view: 'quiz', label, bestKey, i: 0, answered: null,
+    items: list.map(q => ({ q, order: shuffle(q.c.map((_, i) => i)), pick: null })) };
+  render(); window.scrollTo(0, 0);
+}
+
+function home() {
+  const done = Q.filter(x => last(x.id) === 1).length;
+  const wrong = wrongList().length;
+  const rows = Object.keys(SESSIONS).map(k => {
+    const s = SESSIONS[k], qs = Q.filter(x => x.s == k);
+    const best = store.best[k];
+    return `<button class="session" data-s="${k}">
+      <span class="koma" style="color:${s.color}">第${k}コマ</span>
+      <span class="go">${qs.length}問を解く</span>
+      <span class="name">${s.name}</span>
+      <span class="topics">${s.topics}${best != null ? `　最高 ${best}/${qs.length}` : ''}</span>
+      <span class="segs" aria-hidden="true">${qs.map(x => `<i class="${segClass(x.id)}"></i>`).join('')}</span>
+    </button>`;
+  }).join('');
+  app.innerHTML = `
+    <div class="stack">
+      <p class="eyebrow">身体機能作業療法治療学実習Ⅱ</p>
+      <h1>脊髄損傷　確認問題</h1>
+      <p class="muted">5つの選択肢から1つ選ぶと、その場で正誤と解説が出ます。全${Q.length}問。</p>
+    </div>
+    <div class="stack">
+      <div class="overall"><span class="num big">${done}</span><span class="muted">/ ${Q.length}問　直近の回答が正解</span></div>
+      <div class="legend"><span><i class="ok"></i>正解</span><span><i class="ng"></i>不正解</span><span><i></i>まだ解いていない</span></div>
+    </div>
+    <div class="sessions">${rows}</div>
+    <div class="rowbtns">
+      <button class="btn primary" id="rand">全範囲からランダム10問</button>
+      <button class="btn" id="wrong" ${wrong ? '' : 'disabled'}>まちがえた問題だけ（${wrong}問）</button>
+    </div>
+    <div class="stack">
+      <p class="note">成績はこの端末のブラウザにだけ保存されます。ほかの端末や教員には送られません。ブラウザのデータを消すと記録も消えます。</p>
+      ${st.confirm
+        ? `<div class="confirm"><p>この端末の成績をすべて消します。元に戻せません。</p><div class="rowbtns"><button class="btn" id="doReset">成績を消す</button><button class="btn" id="cancelReset">やめる</button></div></div>`
+        : `<div><button class="btn text" id="reset">成績をリセットする</button></div>`}
+    </div>`;
+  app.querySelectorAll('.session').forEach(b => b.onclick = () => {
+    const k = b.dataset.s; start(shuffle(Q.filter(x => x.s == k)), `第${k}コマ　${SESSIONS[k].name}`, k);
+  });
+  document.getElementById('rand').onclick = () => start(shuffle(Q).slice(0, 10), '全範囲ランダム10問', null);
+  document.getElementById('wrong').onclick = () => start(shuffle(wrongList()), 'まちがえた問題', null);
+  const r = document.getElementById('reset'); if (r) r.onclick = () => { st.confirm = true; render(); };
+  const d = document.getElementById('doReset'); if (d) d.onclick = () => { store = { stats: {}, best: {} }; save(); st.confirm = false; render(); };
+  const c = document.getElementById('cancelReset'); if (c) c.onclick = () => { st.confirm = false; render(); };
+}
+
+function quiz() {
+  const it = st.items[st.i], q = it.q, s = SESSIONS[q.s], picked = it.pick !== null;
+  const segs = st.items.map((x, i) => {
+    const c = x.pick === null ? (i === st.i ? 'cur' : '') : (x.pick === x.q.a ? 'ok' : 'ng');
+    return `<i class="${c}"></i>`;
+  }).join('');
+  const choices = it.order.map((ci, n) => {
+    let cls = '', mark = '';
+    if (picked) {
+      if (ci === q.a) { cls = 'is-ok'; mark = '正解'; }
+      else if (ci === it.pick) { cls = 'is-ng'; mark = 'あなたの答え'; }
+    }
+    return `<button class="choice ${cls}" data-c="${ci}" ${picked ? 'disabled' : ''}><span class="k">${n + 1}</span><span>${q.c[ci]}</span><span class="mark">${mark}</span></button>`;
+  }).join('');
+  const ok = picked && it.pick === q.a;
+  app.innerHTML = `
+    <div class="qhead">
+      <button class="btn text" id="quit">やめてホームへ</button>
+      <span class="num count">${st.i + 1} / ${st.items.length}</span>
+    </div>
+    <div class="segs" aria-hidden="true">${segs}</div>
+    <div class="stack">
+      <p class="tag" style="color:${s.color}">第${q.s}コマ　${q.t}</p>
+      <h2 class="question" id="qtext" tabindex="-1">${q.q}</h2>
+    </div>
+    <div class="choices" role="group" aria-labelledby="qtext">${choices}</div>
+    <div aria-live="polite">${picked ? `
+      <div class="feedback ${ok ? 'ok' : 'ng'}">
+        <p class="verdict">${ok ? '○ 正解' : '× 不正解'}</p>
+        ${ok ? '' : `<p><b>正解：</b>${q.c[q.a]}</p>`}
+        <p>${q.e}</p>
+      </div>` : ''}</div>
+    ${picked ? `<button class="btn primary" id="next">${st.i + 1 < st.items.length ? '次の問題へ' : '結果を見る'}</button>` : ''}`;
+  document.getElementById('quit').onclick = () => { st = { view: 'home', confirm: false }; render(); window.scrollTo(0, 0); };
+  app.querySelectorAll('.choice').forEach(b => b.onclick = () => {
+    if (it.pick !== null) return;
+    it.pick = Number(b.dataset.c);
+    const right = it.pick === q.a;
+    const rec = store.stats[q.id] || { c: 0, w: 0, last: null };
+    if (right) rec.c++; else rec.w++; rec.last = right ? 1 : 0;
+    store.stats[q.id] = rec; save(); render();
+    const n = document.getElementById('next'); if (n) n.focus({ preventScroll: true });
+  });
+  const n = document.getElementById('next');
+  if (n) n.onclick = () => {
+    if (st.i + 1 < st.items.length) { st.i++; render(); window.scrollTo(0, 0); }
+    else {
+      const score = st.items.filter(x => x.pick === x.q.a).length;
+      if (st.bestKey && (store.best[st.bestKey] == null || score > store.best[st.bestKey])) { store.best[st.bestKey] = score; save(); }
+      st.view = 'result'; render(); window.scrollTo(0, 0);
+    }
+  };
+}
+
+function result() {
+  const total = st.items.length, score = st.items.filter(x => x.pick === x.q.a).length;
+  const missed = st.items.filter(x => x.pick !== x.q.a).map(x => x.q);
+  const rate = score / total;
+  const msg = rate === 1 ? '全問正解です。' : rate >= 0.8 ? 'よくできています。まちがえた問題だけ確認しましょう。' : rate >= 0.6 ? 'あと少しです。解説を読んでから、もう一度解いてみましょう。' : 'スライドと教科書を見直してから、もう一度挑戦しましょう。';
+  const list = st.items.map((x, i) => {
+    const ok = x.pick === x.q.a;
+    return `<details ${ok ? '' : 'open'}><summary><span class="r ${ok ? 'ok' : 'ng'}">${ok ? '○ 正解' : '× 不正解'}</span><span>${x.q.q}</span></summary>
+      <div class="ans">${ok ? '' : `<p class="muted">あなたの答え：${x.q.c[x.pick]}</p>`}<p><b>正解：</b>${x.q.c[x.q.a]}</p><p>${x.q.e}</p></div></details>`;
+  }).join('');
+  app.innerHTML = `
+    <div class="stack">
+      <p class="eyebrow">${st.label}　結果</p>
+      <div class="score"><span class="num big">${score}</span><span class="num of">/ ${total}</span></div>
+      <p>${msg}</p>
+    </div>
+    <div class="rowbtns">
+      <button class="btn primary" id="retry" ${missed.length ? '' : 'disabled'}>まちがえた${missed.length}問をもう一度</button>
+      <button class="btn" id="home">ホームへ</button>
+    </div>
+    <div class="review">${list}</div>`;
+  document.getElementById('retry').onclick = () => start(shuffle(missed), 'まちがえた問題', null);
+  document.getElementById('home').onclick = () => { st = { view: 'home', confirm: false }; render(); window.scrollTo(0, 0); };
+}
+
+function render() { ({ home, quiz, result })[st.view](); }
+render();
+</script>
+
+</body></html>
